@@ -1,0 +1,43 @@
+[package]
+name = "up"
+version = "1.0.0"
+authors = ["buhe <bugu1986@126.com>"]
+edition = "2018"
+resolver = "2"
+
+[patch.crates-io]
+smol = { git = "https://github.com/esp-rs-compat/smol" }
+polling = { git = "https://github.com/esp-rs-compat/polling" }
+socket2 = { git = "https://github.com/esp-rs-compat/socket2" }
+getrandom = { version = "0.2", git = "https://github.com/esp-rs-compat/getrandom.git" }
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true # Symbols are nice and they don't increase the size on Flash
+opt-level = "z"
+
+[features]
+native = ["esp-idf-sys/native"]
+default = ["experimental"]
+experimental = ["esp-idf-svc/experimental", "esp-idf-hal/experimental", "embedded-svc/experimental"]
+
+[dependencies]
+esp-idf-sys = { version = "0.30.3", features = ["binstart"] }
+esp-idf-svc = "0.36.9"
+esp-idf-hal = "0.32.9"
+embedded-svc = "0.16"
+embedded-hal = "0.2"
+embedded-graphics = "0.7"
+anyhow = {version = "1", features = ["backtrace"]}
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+serde_json = "1.0"
+display-interface = "0.4"
+display-interface-spi = "0.4"
+st7789 = "0.6"
+# image = { version= "0.23.14", default-features = false, features = ["png"] }
+
+[build-dependencies]
+embuild = "0.28"
+anyhow = "1"
