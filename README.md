@@ -1,14 +1,6 @@
-## Up
+## Smart Watch
 ### Hardware wire
-Left is st7789,right is esp32.
-- gnd-gnd
-- vcc-3v3
-- scl-gpio18
-- sda-gpio19
-- reset-gpio23
-- ao-gpio16
-- cs-gpio5
-- bl-gpio4
+
 ### Compile
 1. Install rust.
 
@@ -34,4 +26,3 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 ```
 -p {set your dev port}
 ### View
-![E5B9D164-DBD5-4673-BD3D-71A6EEBC8EDC_1_105_c](https://tva1.sinaimg.cn/large/e6c9d24egy1gzizfgd8bvj20wu0ih0wa.jpg)
