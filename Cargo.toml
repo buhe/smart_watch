@@ -1,5 +1,5 @@
 [package]
-name = "up"
+name = "smart_watch"
 version = "1.0.0"
 authors = ["buhe <bugu1986@126.com>"]
 edition = "2018"

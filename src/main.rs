@@ -28,15 +28,10 @@ use display_interface_spi::SPIInterfaceNoCS;
 use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
 use embedded_graphics::pixelcolor::*;
 
-use profile::Profile;
-use st7789::ST7789;
 
-const SSID: &str = env!("SSID");
-const PASS: &str = env!("PASS");
+const SSID: &str = "";
+const PASS: &str = "";
 
-// mod github;
-mod bilibili;
-pub mod profile;
 
 fn main() -> Result<()> {
     // Temporary. Will disappear once ESP-IDF 4.4 is released, but for now it is necessary to call this function once,
@@ -54,15 +49,7 @@ fn main() -> Result<()> {
         sys_loop_stack.clone(),
         default_nvs.clone(),
     )?;
-    let mut display = lcd(
-        pins.gpio4,
-        pins.gpio16,//ao
-        pins.gpio23,
-        peripherals.spi2,
-        pins.gpio18,
-        pins.gpio19,//sda
-        pins.gpio5,
-    )?;
+
     let mut i = 0;
     loop {
         // println!("...start...");
@@ -71,14 +58,6 @@ fn main() -> Result<()> {
         match res {
             Ok(c) => client = c,
             Err(_) => continue,
-        }
-        let mut res = vec![];
-        // res.push(github::init(&mut client)?);
-        res.push(bilibili::init(&mut client)?);
-        
-        for p in  res {
-            println!("{:?}", &p);
-            AnyError::<st7789::Error<_>>::wrap(|| { draw_profile(&mut display, &p) })?;
         }
         drop(client);
         // drop(wifi);
@@ -90,76 +69,7 @@ fn main() -> Result<()> {
     }
 }
 
-fn lcd(
-    backlight: gpio::Gpio4<gpio::Unknown>,
-    dc: gpio::Gpio16<gpio::Unknown>,
-    rst: gpio::Gpio23<gpio::Unknown>,
-    spi: spi::SPI2,
-    sclk: gpio::Gpio18<gpio::Unknown>,
-    sdo: gpio::Gpio19<gpio::Unknown>,
-    cs: gpio::Gpio5<gpio::Unknown>,
-) -> Result<ST7789<SPIInterfaceNoCS<Master<SPI2, Gpio18<Unknown>, Gpio19<Unknown>, Gpio21<Unknown>, Gpio5<Unknown>>, Gpio16<Output>>, Gpio23<Output>>>{
-    println!("About to initialize the ST7789 LED driver");
 
-    let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
-
-    let mut backlight = backlight.into_output()?;
-    backlight.set_high()?;
-
-    let di = SPIInterfaceNoCS::new(
-        spi::Master::<spi::SPI2, _, _, _, _>::new(
-            spi,
-            spi::Pins {
-                sclk,
-                sdo,
-                sdi: Option::<gpio::Gpio21<gpio::Unknown>>::None,
-                cs: Some(cs),
-            },
-            config,
-        )?,
-        dc.into_output()?,
-    );
-
-    let mut display:  ST7789<SPIInterfaceNoCS<Master<SPI2, Gpio18<Unknown>, Gpio19<Unknown>, Gpio21<Unknown>, Gpio5<Unknown>>, Gpio16<Output>>, Gpio23<Output>> = st7789::ST7789::new(
-        di,
-        rst.into_output()?,
-        320,
-        240,
-    );
-
-    AnyError::<st7789::Error<_>>::wrap(|| {
-        display.init(&mut delay::Ets)?;
-        display.set_orientation(st7789::Orientation::Landscape)
-    })?;
-    Ok(display)
-}
-
-
-fn draw_profile<D>(display: &mut D, p: &Profile) -> Result<(), D::Error>
-where
-    D: DrawTarget<Color = Rgb565> + Dimensions,
-    D::Color: From<Rgb565>,
-{
-    display.clear(Rgb565::BLACK.into())?;
-    let data =  include_bytes!("../images/tv.raw");
-    // println!("data : {:?}", data);
-    let raw_image = ImageRawLE::<Rgb565>::new(data, 64);
-    Image::new(
-        &raw_image, 
-        Point::new(16, (display.bounding_box().size.height - 32) as i32 / 2))
-    .draw(display)?;
-
-    Text::new(
-        format!("nick name: {}\nfolloers: {}\nfollowing: {}" ,&p.display ,&p.followers, &p.followings).as_str(),
-        Point::new(100, (display.bounding_box().size.height - 10) as i32 / 2),
-        MonoTextStyle::new(&FONT_10X20, Rgb565::WHITE.into()),
-    )
-    .draw(display)?;
-
-    println!("LED rendering profile done");
-
-    Ok(())
-}
 
 fn wifi(
     netif_stack: Arc<EspNetifStack>,
