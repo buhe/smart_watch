@@ -28,9 +28,12 @@ use display_interface_spi::SPIInterfaceNoCS;
 use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
 use embedded_graphics::pixelcolor::*;
 
+mod load;
+mod time;
 
-const SSID: &str = "";
-const PASS: &str = "";
+
+const SSID: &str = "Xiaomi_85FE";
+const PASS: &str = "aa11aa041212";
 
 
 fn main() -> Result<()> {
@@ -49,23 +52,10 @@ fn main() -> Result<()> {
         sys_loop_stack.clone(),
         default_nvs.clone(),
     )?;
+    let mut client = EspHttpClient::new_default()?;
 
-    let mut i = 0;
     loop {
-        // println!("...start...");
-        let mut client;
-        let res = EspHttpClient::new_default();
-        match res {
-            Ok(c) => client = c,
-            Err(_) => continue,
-        }
-        drop(client);
-        // drop(wifi);
-        i = i + 1;
-        println!("...{}...", i);
         
-        // println!("...end...");
-        thread::sleep(Duration::from_millis(20000));
     }
 }
 
