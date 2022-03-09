@@ -33,3 +33,12 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [ ] weather
 - [ ] cat play
 - [ ] distance
+
+### Progress
+
+- [ ] time
+    - [x] ntp
+    - [ ] ntp + cpu frev
+- [ ] weather
+- [ ] cat play
+- [ ] distance
