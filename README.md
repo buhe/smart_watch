@@ -1,4 +1,4 @@
-## distanceSmart Watch
+## Smart Watch
 ### Hardware wire
 
 ### Compile
