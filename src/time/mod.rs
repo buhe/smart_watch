@@ -5,7 +5,7 @@ pub struct Time {
 }
 
 impl App for Time {
-    fn init(ctx: AppContext) {
+    fn init(self: &Self,ctx: &AppContext) {
         todo!()
     }
 

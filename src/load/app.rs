@@ -1,7 +1,7 @@
 use super::AppContext;
 
 pub trait App {
-    fn init(ctx: AppContext);
+    fn init(self: &Self,ctx: &AppContext);
 
     fn run(ctx: AppContext);
 
