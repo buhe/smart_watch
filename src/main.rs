@@ -53,9 +53,14 @@ fn main() -> Result<()> {
         default_nvs.clone(),
     )?;
     let mut client = EspHttpClient::new_default()?;
+   
+
+    // init context
+
+    // load app
 
     loop {
-        
+        thread::sleep(Duration::from_millis(20));
     }
 }
 

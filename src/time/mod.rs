@@ -1,5 +1,19 @@
-use crate::load::AppContext;
+use crate::load::{AppContext, app::App};
 
-fn main(ctx: AppContext) {
+pub struct Time {
 
+}
+
+impl App for Time {
+    fn init(ctx: AppContext) {
+        todo!()
+    }
+
+    fn run(ctx: AppContext) {
+        todo!()
+    }
+
+    fn clear(ctx: AppContext) {
+        todo!()
+    }
 }
