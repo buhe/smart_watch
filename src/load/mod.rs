@@ -19,11 +19,11 @@ pub fn load_app(ctx: &AppContext) -> Result<()> {
         Box::new(Weather{}),
     ];
     for a in apps.iter() {
-         a.init(ctx);
+         a.init(ctx)?;
     }
     loop {
         for a in apps.iter() {
-            a.run(ctx);
+            a.run(ctx)?;
         }
         thread::sleep(Duration::from_millis(20));
     }   

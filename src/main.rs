@@ -3,12 +3,12 @@ use std::sync::Arc;
 use anyhow::bail;
 use anyhow::Result;
 
-use embedded_graphics::prelude::*;
-use embedded_graphics::image::{Image, ImageRawLE};
-use embedded_graphics::text::*;
+// use embedded_graphics::prelude::*;
+// use embedded_graphics::image::{Image, ImageRawLE};
+// use embedded_graphics::text::*;
 
-// use embedded_svc::ping::Ping;
-use embedded_svc::utils::anyerror::*;
+// // use embedded_svc::ping::Ping;
+// use embedded_svc::utils::anyerror::*;
 use embedded_svc::wifi::Wifi;
 use embedded_svc::{wifi::{Configuration, ClientConfiguration, Status, ClientStatus, ClientConnectionStatus, ClientIpStatus, ApStatus}};
 use esp_idf_svc::{netif::EspNetifStack, sysloop::EspSysLoopStack, nvs::EspDefaultNvs, wifi::EspWifi};
@@ -16,17 +16,17 @@ use esp_idf_svc::{netif::EspNetifStack, sysloop::EspSysLoopStack, nvs::EspDefaul
 // use log::info; // If using the `binstart` feature of `esp-idf-sys`, always keep this module imported
 use esp_idf_svc::http::client::EspHttpClient;
 
-use embedded_hal::digital::v2::OutputPin;
+// use embedded_hal::digital::v2::OutputPin;
 
-use esp_idf_hal::delay;
-use esp_idf_hal::gpio::{self, Gpio18, Unknown, Gpio19, Gpio21, Gpio5, Gpio16, Output, Gpio23};
+// use esp_idf_hal::delay;
+// use esp_idf_hal::gpio::{self, Gpio18, Unknown, Gpio19, Gpio21, Gpio5, Gpio16, Output, Gpio23};
 use esp_idf_hal::prelude::*;
-use esp_idf_hal::spi::{self, Master, SPI2};
+// use esp_idf_hal::spi::{self, Master, SPI2};
 
-use display_interface_spi::SPIInterfaceNoCS;
+// use display_interface_spi::SPIInterfaceNoCS;
 
-use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
-use embedded_graphics::pixelcolor::*;
+// use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
+// use embedded_graphics::pixelcolor::*;
 use load::AppContext;
 use load::load_app;
 
@@ -49,7 +49,7 @@ fn main() -> Result<()> {
     let default_nvs = Arc::new(EspDefaultNvs::new()?);
 
     let peripherals = Peripherals::take().unwrap();
-    let pins = peripherals.pins;
+    let _pins = peripherals.pins;
     let _wifi = wifi(
         netif_stack.clone(),
         sys_loop_stack.clone(),
@@ -57,7 +57,6 @@ fn main() -> Result<()> {
     )?;
     let client = EspHttpClient::new_default()?;
    
-
     // init context
     let ctx = AppContext{
         http: client,
