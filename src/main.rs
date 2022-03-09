@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use std::{thread, time::Duration};
+
 use anyhow::bail;
 use anyhow::Result;
 
@@ -27,9 +27,12 @@ use display_interface_spi::SPIInterfaceNoCS;
 
 use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
 use embedded_graphics::pixelcolor::*;
+use load::AppContext;
+use load::load_app;
 
 mod load;
 mod time;
+mod weather;
 
 
 const SSID: &str = "Xiaomi_85FE";
@@ -52,16 +55,15 @@ fn main() -> Result<()> {
         sys_loop_stack.clone(),
         default_nvs.clone(),
     )?;
-    let mut client = EspHttpClient::new_default()?;
+    let client = EspHttpClient::new_default()?;
    
 
     // init context
-
+    let ctx = AppContext{
+        http: client,
+    };
     // load app
-
-    loop {
-        thread::sleep(Duration::from_millis(20));
-    }
+    load_app(&ctx)
 }
 
 
