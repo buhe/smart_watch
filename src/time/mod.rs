@@ -1,7 +1,13 @@
 // use std::{net::{TcpStream, UdpSocket}, io::{Write, Read}};
 
+
+
 use anyhow::Result;
 use ntp::protocol::Packet;
+// use time::{Date, Month};
+use time::macros::{date, time};
+use time::{ Duration};
+use time::ext::{NumericalDuration};
 
 use crate::load::{AppContext, app::App};
 
@@ -12,10 +18,15 @@ pub struct Time {
 impl App for Time {
     fn init(self: &Self, _ctx: &AppContext) -> Result<()> {
         println!("hello time");
-            let address = "0.pool.ntp.org:123";
+            let address = "0.cn.pool.ntp.org:123";
     let response: Packet = ntp::request(address).unwrap();
-    let ntp_time = response.transmit_timestamp;
+    let ntp_time = response.receive_timestamp;
     println!("{:?}", ntp_time.to_owned());
+        let d = date!(1900-01-01).with_time(time!(0:00));
+        let s = Duration::seconds(ntp_time.seconds.into());
+        let mut r = d + s;
+        r = r + 8.hours();
+        // assert_eq!(5.seconds(), Duration::seconds(5));
         // let socket = UdpSocket::bind("127.0.0.1:123")?;
         // socket.send_to(buf, "119.28.183.184:123")?;
         // // Receives a single datagram message on the socket. If `buf` is too small to hold
@@ -46,7 +57,7 @@ impl App for Time {
         // println!(
         //     "ntp returned:\n=================\n{}\n=================\nSince it returned something, all is OK",
         //     std::str::from_utf8(&result)?);
-        println!("hello time end");
+        println!("hello time {}", r);
         Ok(())
     }
 

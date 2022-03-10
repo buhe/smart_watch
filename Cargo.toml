@@ -36,6 +36,7 @@ anyhow = {version = "1", features = ["backtrace"]}
 display-interface = "0.4"
 display-interface-spi = "0.4"
 ntp = {git = "https://github.com/buhe/ntp"}
+time = {version="0.3.7", features = ["macros"]}
 # st7789 = "0.6"
 # image = { version= "0.23.14", default-features = false, features = ["png"] }
 
