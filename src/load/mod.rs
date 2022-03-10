@@ -15,7 +15,7 @@ pub struct AppContext {
 
 pub fn load_app(ctx: &AppContext) -> Result<()> {
     let mut apps: Vec<Box<dyn App>> = vec![
-        Box::new(Time {r: None}),
+        Box::new(Time {r: None, count: None}),
         Box::new(Weather{}),
     ];
     for a in apps.iter_mut() {

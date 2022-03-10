@@ -2,6 +2,8 @@
 
 
 
+use std::time::Instant;
+
 use anyhow::Result;
 use ntp::protocol::Packet;
 // use time::{Date, Month};
@@ -13,6 +15,7 @@ use crate::load::{AppContext, app::App};
 
 pub struct Time {
     pub r: Option<PrimitiveDateTime>,
+    pub count: Option<Instant>,
 }
 
 impl App for Time {
@@ -25,11 +28,14 @@ impl App for Time {
         let d = date!(1900-01-01).with_time(time!(0:00));
         let s = Duration::seconds(ntp_time.seconds.into());
         self.r = Some(d + s + 8.hours());
-        println!("hello time {}", self.r.unwrap());
+        self.count = Some(Instant::now());
+        println!("hello time {} {:?}", self.r.unwrap(), self.count.unwrap());
         Ok(())
     }
 
     fn run(self: &mut Self, _ctx: &AppContext) -> Result<()> {
+        let now = Instant::now();
+        println!("time is {}", self.r.unwrap() + now.elapsed() + self.count.unwrap().elapsed());
         Ok(())
     }
 }
