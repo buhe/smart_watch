@@ -7,11 +7,11 @@ pub struct Weather {
 }
 
 impl App for Weather {
-    fn init(self: &Self, _ctx: &AppContext) -> Result<()> {
+    fn init(self: &mut Self, _ctx: &AppContext) -> Result<()> {
         Ok(())
     }
 
-    fn run(self: &Self, _ctx: &AppContext) -> Result<()> {
+    fn run(self: &mut Self, _ctx: &AppContext) -> Result<()> {
         Ok(())
     }
 }

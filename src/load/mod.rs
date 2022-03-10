@@ -14,15 +14,15 @@ pub struct AppContext {
 }
 
 pub fn load_app(ctx: &AppContext) -> Result<()> {
-    let apps: Vec<Box<dyn App>> = vec![
-        Box::new(Time {}),
+    let mut apps: Vec<Box<dyn App>> = vec![
+        Box::new(Time {r: None}),
         Box::new(Weather{}),
     ];
-    for a in apps.iter() {
+    for a in apps.iter_mut() {
          a.init(ctx)?;
     }
     loop {
-        for a in apps.iter() {
+        for a in apps.iter_mut() {
             a.run(ctx)?;
         }
         thread::sleep(Duration::from_millis(20));
