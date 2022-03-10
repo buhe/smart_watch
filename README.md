@@ -25,7 +25,8 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 
 ### View
 
-
+### Design
+- https://www.figma.com/file/ibhnqQRiJZMwjifO27FRu5/smart-watch?node-id=0%3A1
 
 ### Feature
 
