@@ -7,19 +7,20 @@ use embedded_svc::http::{client::*};
 use crate::load::{AppContext, app::App};
 const URL: &str = "https://wttr.in/?format=2";
 pub struct Weather {
-
+    pub count: Option<Instant>,
 }
 
 impl App for Weather {
     fn init(self: &mut Self, _ctx: &AppContext) -> Result<()> {
+        self.count = Some(Instant::now());
         Ok(())
     }
 
     fn run(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
         // api interval 1m
-        let now = Instant::now();
-        if now.elapsed().as_secs() / 60 == 0 {
-            println!("at 1m");
+        if self.count.unwrap().elapsed().as_secs() % 60 == 0 {
+            println!("at 1m {:?}", self.count.unwrap().elapsed().as_secs());
+            
             let response = ctx.http.get(URL)?.submit()?;
 
             let body: Result<Vec<u8>, _> = Bytes::<_, 64>::new(response.reader()).collect();

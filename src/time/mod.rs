@@ -21,7 +21,7 @@ pub struct Time {
 impl App for Time {
     fn init(self: &mut Self, _ctx: &AppContext) -> Result<()> {
         println!("hello time");
-            let address = "0.cn.pool.ntp.org:123";
+        let address = "0.cn.pool.ntp.org:123";
         let response: Packet = ntp::request(address).unwrap();
         let ntp_time = response.receive_timestamp;
         println!("{:?}", ntp_time.to_owned());
@@ -34,8 +34,7 @@ impl App for Time {
     }
 
     fn run(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
-        let _now = Instant::now();
-        // println!("time is {}", self.r.unwrap() + now.elapsed() + self.count.unwrap().elapsed());
+        println!("time is {}", self.r.unwrap() + self.count.unwrap().elapsed());
         Ok(())
     }
 }
