@@ -95,9 +95,19 @@ fn vl53l0x_hello_world(
     tof.set_measurement_timing_budget(200000).expect("timbudg");
     println!("meas budget set; start cont");
     tof.start_continuous(0).expect("start cont");
-    let mut delay = delay::Ets;
+    // let mut delay = delay::Ets;
    
 
+    // loop {
+        match tof.read_range_continuous_millimeters_blocking() {
+            Ok(meas) => {
+                println!("vl: millis {}", meas);
+            }
+            Err(e) => {
+                println!("Err meas: {:?}\r\n", e);
+            }
+        };
+    // }
     Ok(())
 }
 
