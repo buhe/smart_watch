@@ -3,9 +3,10 @@ use std::sync::Arc;
 use anyhow::bail;
 use anyhow::Result;
 
-// use embedded_graphics::prelude::*;
+use embedded_graphics::prelude::*;
 // use embedded_graphics::image::{Image, ImageRawLE};
-// use embedded_graphics::text::*;
+use embedded_graphics::text::*;
+use epd_waveshare::{epd1in54::*, graphics::VarDisplay, prelude::*};
 
 // // use embedded_svc::ping::Ping;
 // use embedded_svc::utils::anyerror::*;
@@ -18,15 +19,13 @@ use esp_idf_svc::http::client::EspHttpClient;
 
 // use embedded_hal::digital::v2::OutputPin;
 
-// use esp_idf_hal::delay;
-// use esp_idf_hal::gpio::{self, Gpio18, Unknown, Gpio19, Gpio21, Gpio5, Gpio16, Output, Gpio23};
+use esp_idf_hal::delay;
+use esp_idf_hal::gpio::{self};
 use esp_idf_hal::prelude::*;
-// use esp_idf_hal::spi::{self, Master, SPI2};
+use esp_idf_hal::spi::{self};
 
-// use display_interface_spi::SPIInterfaceNoCS;
-
-// use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
-// use embedded_graphics::pixelcolor::*;
+use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
+use embedded_graphics::pixelcolor::*;
 use load::AppContext;
 use load::load_app;
 
@@ -49,13 +48,23 @@ fn main() -> Result<()> {
     let default_nvs = Arc::new(EspDefaultNvs::new()?);
 
     let peripherals = Peripherals::take().unwrap();
-    let _pins = peripherals.pins;
+    let pins = peripherals.pins;
     let _wifi = wifi(
         netif_stack.clone(),
         sys_loop_stack.clone(),
         default_nvs.clone(),
     )?;
     let client = EspHttpClient::new_default()?;
+
+    // waveshare_epd_hello_world(
+    // peripherals.spi2,
+    // pins.gpio13,
+    // pins.gpio14,
+    // pins.gpio15,
+    // pins.gpio25,
+    // pins.gpio27,
+    // pins.gpio26,
+    // )?;
    
     // init context
     let mut ctx = AppContext{
@@ -63,6 +72,53 @@ fn main() -> Result<()> {
     };
     // load app
     load_app(&mut ctx)
+}
+
+fn waveshare_epd_hello_world(
+    spi: spi::SPI2,
+    sclk: gpio::Gpio13<gpio::Unknown>,
+    sdo: gpio::Gpio14<gpio::Unknown>,
+    cs: gpio::Gpio15<gpio::Unknown>,
+    busy_in: gpio::Gpio25<gpio::Unknown>,
+    dc: gpio::Gpio27<gpio::Unknown>,
+    rst: gpio::Gpio26<gpio::Unknown>,
+) -> Result<()> {
+    println!("About to initialize Waveshare 1.54 e-paper display");
+    let cs = cs.into_output().unwrap();
+    let busy_in = busy_in.into_input().unwrap();
+    let dc = dc.into_output().unwrap();
+    let rst = rst.into_output().unwrap();
+
+    let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
+
+    let mut my_spi = spi::Master::<spi::SPI2, _, _, _, _>::new(
+        spi,
+        spi::Pins {
+            sclk: sclk,
+            sdo: sdo,
+            sdi: Option::<gpio::Gpio12<gpio::Unknown>>::None,
+            cs: Option::<gpio::Gpio15<gpio::Unknown>>::None,
+        },
+        config,
+    )
+    .unwrap();
+    // Setup EPD
+    let mut epd = Epd1in54::new(&mut my_spi, cs, busy_in, dc, rst, &mut delay::Ets).unwrap();
+    // Use display graphics from embedded-graphics
+    let mut buffer =
+        vec![DEFAULT_BACKGROUND_COLOR.get_byte_value(); WIDTH as usize / 8 * HEIGHT as usize];
+    let mut display = VarDisplay::new(WIDTH, HEIGHT, &mut buffer);
+
+    let style = MonoTextStyle::new(&FONT_10X20, BinaryColor::On);
+
+    // Create a text at position (20, 30) and draw it using the previously defined style
+    Text::new("Hello Rust!", Point::new(20, 30), style).draw(&mut display)?;
+
+    // Display updated frame
+    epd.update_frame(&mut my_spi, &display.buffer(), &mut delay::Ets)?;
+    epd.display_frame(&mut my_spi, &mut delay::Ets)?;
+
+    Ok(())
 }
 
 
