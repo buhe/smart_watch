@@ -23,6 +23,7 @@ use esp_idf_hal::delay;
 use esp_idf_hal::gpio::{self};
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::spi::{self};
+use esp_idf_hal::i2c;
 
 use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
 use embedded_graphics::pixelcolor::*;
@@ -72,6 +73,32 @@ fn main() -> Result<()> {
     };
     // load app
     load_app(&mut ctx)
+}
+
+fn vl53l0x_hello_world(
+    i2c: i2c::I2C0,
+    rst: gpio::Gpio16<gpio::Unknown>,
+    scl: gpio::Gpio22<gpio::Unknown>,
+    sda: gpio::Gpio21<gpio::Unknown>,
+) -> Result<()> {
+    println!("About to initialize a generic SSD1306 I2C LED driver");
+
+    let config = <i2c::config::MasterConfig as Default>::default().baudrate(1.MHz().into());
+
+    let mut tof = vl53l0x::VL53L0x::new(i2c::Master::<i2c::I2C0, _, _>::new(
+        i2c,
+        i2c::MasterPins { sda, scl },
+        config,
+    )?).unwrap();
+
+     println!("ready to set meas budget");
+    tof.set_measurement_timing_budget(200000).expect("timbudg");
+    println!("meas budget set; start cont");
+    tof.start_continuous(0).expect("start cont");
+    let mut delay = delay::Ets;
+   
+
+    Ok(())
 }
 
 fn waveshare_epd_hello_world(
