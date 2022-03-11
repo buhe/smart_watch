@@ -33,9 +33,9 @@ impl App for Time {
         Ok(())
     }
 
-    fn run(self: &mut Self, _ctx: &AppContext) -> Result<()> {
-        let now = Instant::now();
-        println!("time is {}", self.r.unwrap() + now.elapsed() + self.count.unwrap().elapsed());
+    fn run(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
+        let _now = Instant::now();
+        // println!("time is {}", self.r.unwrap() + now.elapsed() + self.count.unwrap().elapsed());
         Ok(())
     }
 }

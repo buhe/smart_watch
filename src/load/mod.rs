@@ -13,7 +13,7 @@ pub struct AppContext {
     pub http: EspHttpClient,
 }
 
-pub fn load_app(ctx: &AppContext) -> Result<()> {
+pub fn load_app(ctx: &mut AppContext) -> Result<()> {
     let mut apps: Vec<Box<dyn App>> = vec![
         Box::new(Time {r: None, count: None}),
         Box::new(Weather{}),

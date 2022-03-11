@@ -58,11 +58,11 @@ fn main() -> Result<()> {
     let client = EspHttpClient::new_default()?;
    
     // init context
-    let ctx = AppContext{
+    let mut ctx = AppContext{
         http: client,
     };
     // load app
-    load_app(&ctx)
+    load_app(&mut ctx)
 }
 
 
