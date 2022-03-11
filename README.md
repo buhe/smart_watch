@@ -31,7 +31,7 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 ### Feature
 
 - [x] time
-- [ ] weather
+- [x] weather
 - [ ] cat play
 - [ ] distance
 
@@ -41,6 +41,6 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
     - [x] ntp
     - [x] format date and select timezone
     - [x] ntp + cpu frev
-- [ ] weather
+- [x] weather
 - [ ] cat play
 - [ ] distance
