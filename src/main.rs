@@ -49,7 +49,7 @@ fn main() -> Result<()> {
     let default_nvs = Arc::new(EspDefaultNvs::new()?);
 
     let peripherals = Peripherals::take().unwrap();
-    let pins = peripherals.pins;
+    let _pins = peripherals.pins;
     let _wifi = wifi(
         netif_stack.clone(),
         sys_loop_stack.clone(),
@@ -75,9 +75,9 @@ fn main() -> Result<()> {
     load_app(&mut ctx)
 }
 
-fn vl53l0x_hello_world(
+fn _vl53l0x_hello_world(
     i2c: i2c::I2C0,
-    rst: gpio::Gpio16<gpio::Unknown>,
+    _rst: gpio::Gpio16<gpio::Unknown>,
     scl: gpio::Gpio22<gpio::Unknown>,
     sda: gpio::Gpio21<gpio::Unknown>,
 ) -> Result<()> {
@@ -111,7 +111,7 @@ fn vl53l0x_hello_world(
     Ok(())
 }
 
-fn waveshare_epd_hello_world(
+fn _waveshare_epd_hello_world(
     spi: spi::SPI2,
     sclk: gpio::Gpio13<gpio::Unknown>,
     sdo: gpio::Gpio14<gpio::Unknown>,
