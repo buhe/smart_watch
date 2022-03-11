@@ -47,6 +47,7 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [ ] distance
 - [ ] soldering chip
 - [ ] select power
+- [ ] battery
 - [ ] flash
 - [ ] e-paper as display screen
     - [ ] render time
