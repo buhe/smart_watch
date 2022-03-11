@@ -43,7 +43,11 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
     - [x] ntp + cpu frev
 - [x] weather
 - [ ] cat play
+    - [ ] switch it
 - [ ] distance
 - [ ] select power
 - [ ] flash
 - [ ] e-paper as display screen
+    - [ ] render time
+    - [ ] render weather
+    - [ ] render distance
