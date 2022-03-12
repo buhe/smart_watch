@@ -51,7 +51,7 @@ fn main() -> Result<()> {
     let default_nvs = Arc::new(EspDefaultNvs::new()?);
 
     let peripherals = Peripherals::take().unwrap();
-    // let pins = peripherals.pins;
+    let pins = peripherals.pins;
     let _wifi = wifi(
         netif_stack.clone(),
         sys_loop_stack.clone(),
@@ -76,7 +76,7 @@ fn main() -> Result<()> {
     // init context
     let mut ctx = AppContext{
         http: client,
-        peripherals: &peripherals,
+        gpio26: &mut pins.gpio26.into_output().unwrap(),
     };
     // load app
     load_app(&mut ctx)

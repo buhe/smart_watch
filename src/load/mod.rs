@@ -2,7 +2,7 @@ use std::{thread, time::Duration};
 
 use anyhow::Result;
 
-use esp_idf_hal::prelude::Peripherals;
+use esp_idf_hal::gpio::{Gpio26, Output};
 use esp_idf_svc::http::client::EspHttpClient;
 
 use crate::{time::Time, weather::Weather, cat_play::CatPlay};
@@ -12,7 +12,7 @@ use self::app::App;
 pub mod app;
 pub struct AppContext<'a> {
     pub http: EspHttpClient,
-    pub peripherals :&'a Peripherals,
+    pub gpio26 :&'a mut Gpio26<Output>,
 }
 
 pub fn load_app(ctx: &mut AppContext) -> Result<()> {

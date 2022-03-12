@@ -11,7 +11,7 @@ pub struct Weather {
 }
 
 impl App for Weather {
-    fn init(self: &mut Self, _ctx: &AppContext) -> Result<()> {
+    fn init(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
         self.count = Some(Instant::now());
         Ok(())
     }

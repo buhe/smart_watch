@@ -19,7 +19,7 @@ pub struct Time {
 }
 
 impl App for Time {
-    fn init(self: &mut Self, _ctx: &AppContext) -> Result<()> {
+    fn init(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
         println!("hello time");
         let address = "0.cn.pool.ntp.org:123";
         let response: Packet = ntp::request(address).unwrap();
