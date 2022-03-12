@@ -39,6 +39,8 @@ ntp = {git = "https://github.com/buhe/ntp"}
 time = {version="0.3.7", features = ["macros"]}
 epd-waveshare = "0.5.0"
 vl53l0x = "0.3.1"
+# serde = { version = "1.0", default-features = false, features = ["derive"] }
+# serde-json-core = {version="0.4.0", features = ["std"]}
 # st7789 = "0.6"
 # image = { version= "0.23.14", default-features = false, features = ["png"] }
 

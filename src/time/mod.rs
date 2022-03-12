@@ -34,7 +34,7 @@ impl App for Time {
     }
 
     fn run(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
-        println!("time is {}", self.r.unwrap() + self.count.unwrap().elapsed());
+        // println!("time is {}", self.r.unwrap() + self.count.unwrap().elapsed());
         Ok(())
     }
 }
