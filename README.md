@@ -55,6 +55,7 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
     - [ ] render weather
     - [ ] render distance
 - [ ] network via phone bt
+- [x] supabase
 
 ### onoff
 
