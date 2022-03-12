@@ -6,7 +6,7 @@ use anyhow::Result;
 use embedded_graphics::prelude::*;
 // use embedded_graphics::image::{Image, ImageRawLE};
 use embedded_graphics::text::*;
-use embedded_hal::digital::v2::OutputPin;
+// use embedded_hal::digital::v2::OutputPin;
 use epd_waveshare::{epd1in54::*, graphics::VarDisplay, prelude::*};
 
 // // use embedded_svc::ping::Ping;
@@ -51,7 +51,7 @@ fn main() -> Result<()> {
     let default_nvs = Arc::new(EspDefaultNvs::new()?);
 
     let peripherals = Peripherals::take().unwrap();
-    let pins = peripherals.pins;
+    // let pins = peripherals.pins;
     let _wifi = wifi(
         netif_stack.clone(),
         sys_loop_stack.clone(),
@@ -59,9 +59,9 @@ fn main() -> Result<()> {
     )?;
     let client = EspHttpClient::new_default()?;
 
-    let mut s = pins.gpio26.into_output().unwrap();
+    // let mut s = pins.gpio26.into_output().unwrap();
     // s.set_high().unwrap();
-    s.set_low().unwrap();
+    // s.set_low().unwrap();
 
     // waveshare_epd_hello_world(
     // peripherals.spi2,
@@ -76,7 +76,7 @@ fn main() -> Result<()> {
     // init context
     let mut ctx = AppContext{
         http: client,
-        // peripherals: &peripherals,
+        peripherals: &peripherals,
     };
     // load app
     load_app(&mut ctx)

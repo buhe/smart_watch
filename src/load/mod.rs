@@ -10,9 +10,9 @@ use crate::{time::Time, weather::Weather, cat_play::CatPlay};
 use self::app::App;
 
 pub mod app;
-pub struct AppContext {
+pub struct AppContext<'a> {
     pub http: EspHttpClient,
-    // pub peripherals :&'a Peripherals,
+    pub peripherals :&'a Peripherals,
 }
 
 pub fn load_app(ctx: &mut AppContext) -> Result<()> {
