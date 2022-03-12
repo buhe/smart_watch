@@ -35,8 +35,6 @@ impl App for CatPlay {
             } else {
                 ctx.gpio26.set_high()?;
             }
-            
-            // println!("res {}", &str);
         }
         Ok(())
     }
