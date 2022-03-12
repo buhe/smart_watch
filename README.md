@@ -32,7 +32,7 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 
 - [x] time
 - [x] weather
-- [ ] cat play
+- [x] cat play
 - [ ] distance
 
 ### Progress
@@ -42,8 +42,8 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
     - [x] format date and select timezone
     - [x] ntp + cpu frev
 - [x] weather
-- [ ] cat play
-    - [ ] switch it
+- [x] cat play
+    - [x] switch it
 - [ ] distance
     - [ ] switch it
 - [ ] soldering chip
