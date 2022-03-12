@@ -14,9 +14,8 @@ pub struct CatPlay {
 }
 
 impl App for CatPlay {
-    fn init(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
+    fn init(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
         self.count = Some(Instant::now());
-        ctx.gpio26.set_low()?;
         Ok(())
     }
 
@@ -31,9 +30,13 @@ impl App for CatPlay {
             let body: Result<Vec<u8>, _> = Bytes::<_, 64>::new(response.reader()).collect();
             let body = body?;
             let str = String::from_utf8_lossy(&body).into_owned();
-           
+            if str == "[{\"en\":0}]" {
+                ctx.gpio26.set_low()?;
+            } else {
+                ctx.gpio26.set_high()?;
+            }
             
-            println!("res {}", &str);
+            // println!("res {}", &str);
         }
         Ok(())
     }
