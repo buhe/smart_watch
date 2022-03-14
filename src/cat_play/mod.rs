@@ -33,9 +33,9 @@ impl App for CatPlay {
             let body = body?;
             let str = String::from_utf8_lossy(&body).into_owned();
             if str == "[{\"en\":0}]" {
-                ctx.gpio26.set_low()?;
+                ctx.gpio26.as_mut().unwrap().set_low()?;
             } else {
-                ctx.gpio26.set_high()?;
+                ctx.gpio26.as_mut().unwrap().set_high()?;
             }
         }
         Ok(())

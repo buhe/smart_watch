@@ -35,6 +35,7 @@ mod load;
 mod time;
 mod weather;
 mod cat_play;
+mod distance;
 
 
 const SSID: &str = "Xiaomi_85FE";
@@ -76,7 +77,10 @@ fn main() -> Result<()> {
     // init context
     let mut ctx = AppContext{
         http: client,
-        gpio26: &mut pins.gpio26.into_output().unwrap(),
+        gpio26: Some(pins.gpio26.into_output().unwrap()),
+        gpio22: Some(pins.gpio22),
+        gpio21: Some(pins.gpio21),
+        i2c0: Some(peripherals.i2c0),
     };
     // load app
     load_app(&mut ctx)
