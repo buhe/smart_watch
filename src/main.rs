@@ -17,7 +17,7 @@ use esp_idf_svc::{netif::EspNetifStack, sysloop::EspSysLoopStack, nvs::EspDefaul
 // use esp_idf_sys as _;
 // use log::info; // If using the `binstart` feature of `esp-idf-sys`, always keep this module imported
 use esp_idf_svc::http::client::EspHttpClient;
-
+use esp_idf_hal::i2c::{self};
 // use embedded_hal::digital::v2::OutputPin;
 
 use esp_idf_hal::delay;
@@ -68,7 +68,11 @@ fn main() -> Result<()> {
     // pins.gpio27,
     // pins.gpio26,
     // )?;
-   
+//    _vl53l0x_hello_world(
+//         peripherals.i2c0,
+//         pins.gpio22,
+//         pins.gpio21
+//    );
     // init context
     let mut ctx = AppContext{
         http: client,
@@ -199,6 +203,42 @@ fn wifi(
     }
 
     Ok(wifi)
+}
+
+fn _vl53l0x_hello_world(
+    i2c: i2c::I2C0,
+    // _rst: gpio::Gpio16<gpio::Unknown>,
+    scl: gpio::Gpio22<gpio::Unknown>,
+    sda: gpio::Gpio21<gpio::Unknown>,
+) -> Result<()> {
+    println!("About to initialize a generic SSD1306 I2C LED driver");
+
+    let config = <i2c::config::MasterConfig as Default>::default().baudrate(1.MHz().into());
+
+    let mut tof = vl53l0x::VL53L0x::new(i2c::Master::<i2c::I2C0, _, _>::new(
+        i2c,
+        i2c::MasterPins { sda, scl },
+        config,
+    )?).unwrap();
+
+     println!("ready to set meas budget");
+    tof.set_measurement_timing_budget(200000).expect("timbudg");
+    println!("meas budget set; start cont");
+    tof.start_continuous(0).expect("start cont");
+    // let mut delay = delay::Ets;
+   
+
+    // loop {
+        match tof.read_range_continuous_millimeters_blocking() {
+            Ok(meas) => {
+                println!("vl: millis {}", meas);
+            }
+            Err(e) => {
+                println!("Err meas: {:?}\r\n", e);
+            }
+        };
+    // }
+    Ok(())
 }
 
 // fn ping(ip_settings: &ipv4::ClientSettings) -> Result<()> {

@@ -33,7 +33,7 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [x] time
 - [x] weather
 - [x] cat play
-- [ ] distance
+- [x] distance
 
 ### Progress
 
@@ -44,8 +44,8 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [x] weather
 - [x] cat play
     - [x] switch it
-- [ ] distance
-    - [ ] switch it
+- [x] distance
+    - [x] switch it
 - [ ] soldering chip
 - [ ] select power
 - [ ] battery
@@ -56,6 +56,7 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
     - [ ] render distance
 - [ ] network via phone bt
 - [x] supabase
+- [ ] app based supabase
 
 ### onoff
 

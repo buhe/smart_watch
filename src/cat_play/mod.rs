@@ -23,7 +23,6 @@ impl App for CatPlay {
     fn run(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
         let e = self.count.unwrap().elapsed().as_secs();
          if e % 4 == 0 && e != self.cond {
-            println!("at 4s {:?}", e);
             self.cond = e;
             let response = ctx.http.get(URL)?
             .header("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjeGl2c2JzanVxbWVhZm53dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDcwNjYwOTEsImV4cCI6MTk2MjY0MjA5MX0.YP7o3MKM7sxsNioyuVuVqTIgdgJbKz638njLOnT9DRA")
@@ -33,8 +32,10 @@ impl App for CatPlay {
             let body = body?;
             let str = String::from_utf8_lossy(&body).into_owned();
             if str == "[{\"en\":0}]" {
+                println!("stop cat play");
                 ctx.gpio26.as_mut().unwrap().set_low()?;
             } else {
+                println!("start cat play");
                 ctx.gpio26.as_mut().unwrap().set_high()?;
             }
         }

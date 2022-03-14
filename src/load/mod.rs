@@ -24,7 +24,7 @@ pub fn load_app(ctx: &mut AppContext) -> Result<()> {
         Box::new(Time {r: None, count: None}),
         Box::new(Weather{count: None, cond: 0}),
         Box::new(CatPlay{count: None, cond: 0}),
-        Box::new(Distance{count:None, cond: 0, tof: None}),
+        Box::new(Distance{count:None, cond: 0, tof: None, state: crate::distance::State::Stopped}),
     ];
     for a in apps.iter_mut() {
          a.init(ctx)?;
