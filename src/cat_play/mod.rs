@@ -33,10 +33,10 @@ impl App for CatPlay {
             let str = String::from_utf8_lossy(&body).into_owned();
             if str == "[{\"en\":0}]" {
                 println!("stop cat play");
-                ctx.gpio26.as_mut().unwrap().set_low()?;
+                ctx.gpio16.as_mut().unwrap().set_low()?;
             } else {
                 println!("start cat play");
-                ctx.gpio26.as_mut().unwrap().set_high()?;
+                ctx.gpio16.as_mut().unwrap().set_high()?;
             }
         }
         Ok(())

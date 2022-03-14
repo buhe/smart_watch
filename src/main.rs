@@ -59,15 +59,15 @@ fn main() -> Result<()> {
     )?;
     let client = EspHttpClient::new_default()?;
 
-    // waveshare_epd_hello_world(
-    // peripherals.spi2,
-    // pins.gpio13,
-    // pins.gpio14,
-    // pins.gpio15,
-    // pins.gpio25,
-    // pins.gpio27,
-    // pins.gpio26,
-    // )?;
+    _waveshare_epd_hello_world(
+    peripherals.spi2,
+    pins.gpio13,
+    pins.gpio14,
+    pins.gpio15,
+    pins.gpio25,
+    pins.gpio27,
+    pins.gpio26,
+    )?;
 //    _vl53l0x_hello_world(
 //         peripherals.i2c0,
 //         pins.gpio22,
@@ -76,7 +76,7 @@ fn main() -> Result<()> {
     // init context
     let mut ctx = AppContext{
         http: client,
-        gpio26: Some(pins.gpio26.into_output().unwrap()),
+        gpio16: Some(pins.gpio16.into_output().unwrap()),
         gpio22: Some(pins.gpio22),
         gpio21: Some(pins.gpio21),
         i2c0: Some(peripherals.i2c0),
