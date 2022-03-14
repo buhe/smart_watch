@@ -49,10 +49,16 @@ impl App for Distance {
             let body = body?;
             let str = String::from_utf8_lossy(&body).into_owned();
             if str == "[{\"en\":0}]" {
-                // let gpio26 = &ctx.peripherals.pins.gpio26;
             } else {
                 self.tof.as_mut().unwrap().start_continuous(0).expect("start cont");
-                // ctx.peripherals.pins.gpio26.into_output().unwrap().set_high()?;
+                match self.tof.as_mut().unwrap().read_range_continuous_millimeters_blocking() {
+                    Ok(meas) => {
+                        println!("vl: millis {}", meas);
+                    }
+                    Err(e) => {
+                        println!("Err meas: {:?}\r\n", e);
+                    }
+                };
             }
         }
         Ok(())
