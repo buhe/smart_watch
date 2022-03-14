@@ -11,6 +11,7 @@ const URL: &str = "https://jcxivsbsjuqmeafnwuwk.supabase.co/rest/v1/onoff?id=eq.
 
 pub struct CatPlay {
     pub count: Option<Instant>,
+    pub cond: u64,
 }
 
 impl App for CatPlay {
@@ -20,9 +21,10 @@ impl App for CatPlay {
     }
 
     fn run(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
-         if self.count.unwrap().elapsed().as_secs() % 1 == 0 {
-            println!("at 1s {:?}", self.count.unwrap().elapsed().as_secs());
-            
+        let e = self.count.unwrap().elapsed().as_secs();
+         if e % 4 == 0 && e != self.cond {
+            println!("at 4s {:?}", e);
+            self.cond = e;
             let response = ctx.http.get(URL)?
             .header("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjeGl2c2JzanVxbWVhZm53dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDcwNjYwOTEsImV4cCI6MTk2MjY0MjA5MX0.YP7o3MKM7sxsNioyuVuVqTIgdgJbKz638njLOnT9DRA")
             .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjeGl2c2JzanVxbWVhZm53dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDcwNjYwOTEsImV4cCI6MTk2MjY0MjA5MX0.YP7o3MKM7sxsNioyuVuVqTIgdgJbKz638njLOnT9DRA").submit()?;

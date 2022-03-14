@@ -8,6 +8,7 @@ use crate::load::{AppContext, app::App};
 const URL: &str = "https://wttr.in/?format=2";
 pub struct Weather {
     pub count: Option<Instant>,
+    pub cond: u64,
 }
 
 impl App for Weather {
@@ -18,9 +19,10 @@ impl App for Weather {
 
     fn run(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
         // api interval 1m
-        if self.count.unwrap().elapsed().as_secs() % 60 == 0 {
-            println!("at 1m {:?}", self.count.unwrap().elapsed().as_secs());
-            
+        let e = self.count.unwrap().elapsed().as_secs();
+        if e % 60 == 0 && e != self.cond {
+            println!("at 1m {:?}", e);
+            self.cond = e;
             let response = ctx.http.get(URL)?.submit()?;
 
             let body: Result<Vec<u8>, _> = Bytes::<_, 64>::new(response.reader()).collect();
