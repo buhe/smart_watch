@@ -47,8 +47,9 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [x] distance
     - [x] switch it
 - [ ] soldering chip
-- [ ] select power
 - [ ] battery
+- [ ] charge
+- [ ] ldo
 - [ ] flash via serial
 - [ ] e-paper as display screen
     - [ ] render time
@@ -56,7 +57,8 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
     - [ ] render distance
 - [ ] network via phone bt
 - [x] supabase
-- [ ] app based supabase
+- [x] app based supabase
+- [x] st7789
 
 ### onoff
 
