@@ -43,18 +43,19 @@ where
    
     loop {
         for a in apps.iter_mut() {
-            a.run(ctx, &targets)?;
+            a.run(ctx, &mut targets)?;
         }
         while !targets.is_empty() {
             let t = targets.pop().unwrap();
-        }
-        // at render
-       Text::new(
-                "hello!!!world",
-                Point::new(10, 10),
+                 Text::new(
+                t.text.as_str(),
+                t.point,
                 MonoTextStyle::new(&FONT_10X20, Rgb565::WHITE.into()),
             )
             .draw(display);
+        }
+        // at render
+  
         thread::sleep(Duration::from_millis(20));
     }   
 }

@@ -1,6 +1,8 @@
+use std::str::FromStr;
 use std::time::Instant;
 
 use anyhow::Result;
+use embedded_graphics::prelude::Point;
 use embedded_svc::io::Bytes;
 use embedded_svc::http::{client::*};
 
@@ -18,7 +20,7 @@ impl App for Weather {
         Ok(())
     }
 
-    fn run(self: &mut Self, ctx: &mut AppContext, ts: &Vec<Target>) -> Result<()> {
+    fn run(self: &mut Self, ctx: &mut AppContext, ts: &mut Vec<Target>) -> Result<()> {
         // api interval 1m
         let e = self.count.unwrap().elapsed().as_secs();
         if e % 60 == 0 && e != self.cond {
@@ -32,6 +34,7 @@ impl App for Weather {
             let str = String::from_utf8_lossy(&body).into_owned();
 
             println!("res {}", &str);
+            ts.push(Target::new(String::from(str), Point::new(10, 10)));
         }
         Ok(())
     }

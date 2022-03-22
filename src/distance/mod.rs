@@ -41,7 +41,7 @@ impl App for Distance {
         Ok(())
     }
 
-    fn run(self: &mut Self, ctx: &mut AppContext, ts: &Vec<Target>) -> Result<()> {
+    fn run(self: &mut Self, ctx: &mut AppContext, ts: &mut Vec<Target>) -> Result<()> {
         let e = self.count.unwrap().elapsed().as_secs();
          if e % 4 == 0 && e != self.cond {
             self.cond = e;
