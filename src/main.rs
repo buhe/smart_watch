@@ -46,12 +46,15 @@ use load::load_app;
 
 use st7789;
 use st7789::ST7789;
+// use target::Target;
 
 mod load;
 mod time;
 mod weather;
 mod cat_play;
 mod distance;
+
+mod target;
 
 
 const SSID: &str = "Xiaomi_85FE";
@@ -84,21 +87,7 @@ fn main() -> Result<()> {
         pins.gpio19,//sda
         pins.gpio5,
     )?;
-    AnyError::<st7789::Error<_>>::wrap(|| { draw_profile(&mut display) })?;
-    // _waveshare_epd_hello_world(
-    // peripherals.spi2,
-    // pins.gpio13,
-    // pins.gpio14, //din-mosi
-    // pins.gpio15,
-    // pins.gpio25,
-    // pins.gpio27,
-    // pins.gpio26,
-    // )?;
-//    _vl53l0x_hello_world(
-//         peripherals.i2c0,
-//         pins.gpio22,
-//         pins.gpio21
-//    );
+    display.clear(Rgb565::BLACK.into()).unwrap();
     // init context
     let mut ctx = AppContext{
         http: client,
@@ -106,9 +95,10 @@ fn main() -> Result<()> {
         gpio22: Some(pins.gpio22),
         gpio21: Some(pins.gpio21),
         i2c0: Some(peripherals.i2c0),
+        // targets: Box::new(targets),
     };
     // load app
-    load_app(&mut ctx)
+    load_app(&mut ctx,&mut display)
 }
 
 fn lcd(
@@ -156,7 +146,7 @@ fn lcd(
 }
 
 
-fn draw_profile<D>(display: &mut D) -> Result<(), D::Error>
+fn _draw_profile<D>(display: &mut D) -> Result<(), D::Error>
 where
     D: DrawTarget<Color = Rgb565> + Dimensions,
     D::Color: From<Rgb565>,

@@ -2,11 +2,15 @@ use std::{thread, time::Duration};
 
 use anyhow::Result;
 
+use embedded_graphics::text::*;
+use embedded_graphics::{draw_target::DrawTarget, pixelcolor::Rgb565, prelude::*};
+use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
+
 use esp_idf_hal::gpio::{Gpio26, Output, Gpio22, Unknown, Gpio21};
 use esp_idf_svc::http::client::EspHttpClient;
 use esp_idf_hal::i2c;
 
-use crate::{time::Time, weather::Weather, cat_play::CatPlay, distance::Distance};
+use crate::{time::Time, weather::Weather, cat_play::CatPlay, distance::Distance, target::Target};
 
 use self::app::App;
 
@@ -17,9 +21,14 @@ pub struct AppContext {
     pub gpio26 :Option<Gpio26<Output>>,
     pub gpio22: Option<Gpio22<Unknown>>,
     pub gpio21: Option<Gpio21<Unknown>>,
+    // pub targets: Box<Vec<Target>>,
 }
 
-pub fn load_app(ctx: &mut AppContext) -> Result<()> {
+pub fn load_app<D>(ctx: &mut AppContext, display: &mut D) -> Result<()> 
+where
+    D: DrawTarget<Color = Rgb565> + Dimensions,
+    D::Color: From<Rgb565>,
+{
     let mut apps: Vec<Box<dyn App>> = vec![
         Box::new(Time {r: None, count: None}),
         Box::new(Weather{count: None, cond: 0}),
@@ -29,10 +38,21 @@ pub fn load_app(ctx: &mut AppContext) -> Result<()> {
     for a in apps.iter_mut() {
          a.init(ctx)?;
     }
+    let mut targets :Vec<Target> = vec![];
     loop {
         for a in apps.iter_mut() {
             a.run(ctx)?;
         }
+        while !targets.is_empty() {
+            let t = targets.pop().unwrap();
+        }
+        // at render
+       Text::new(
+                "hello!!!world",
+                Point::new(10, 10),
+                MonoTextStyle::new(&FONT_10X20, Rgb565::WHITE.into()),
+            )
+            .draw(display);
         thread::sleep(Duration::from_millis(20));
     }   
 }
