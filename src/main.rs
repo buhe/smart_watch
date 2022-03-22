@@ -3,16 +3,29 @@ use std::sync::Arc;
 use anyhow::bail;
 use anyhow::Result;
 
+use display_interface_spi::SPIInterfaceNoCS;
 use embedded_graphics::prelude::*;
 // use embedded_graphics::image::{Image, ImageRawLE};
 use embedded_graphics::text::*;
 // use embedded_hal::digital::v2::OutputPin;
-use epd_waveshare::{graphics::VarDisplay, prelude::*};
+// use epd_waveshare::{graphics::VarDisplay, prelude::*};
 
+use embedded_hal::digital::v2::OutputPin;
+use embedded_svc::utils::anyerror::AnyError;
 // // use embedded_svc::ping::Ping;
 // use embedded_svc::utils::anyerror::*;
 use embedded_svc::wifi::Wifi;
 use embedded_svc::{wifi::{Configuration, ClientConfiguration, Status, ClientStatus, ClientConnectionStatus, ClientIpStatus, ApStatus}};
+use esp_idf_hal::gpio::Gpio16;
+use esp_idf_hal::gpio::Gpio18;
+use esp_idf_hal::gpio::Gpio19;
+use esp_idf_hal::gpio::Gpio21;
+use esp_idf_hal::gpio::Gpio23;
+use esp_idf_hal::gpio::Gpio5;
+use esp_idf_hal::gpio::Output;
+use esp_idf_hal::gpio::Unknown;
+use esp_idf_hal::spi::Master;
+use esp_idf_hal::spi::SPI2;
 use esp_idf_svc::{netif::EspNetifStack, sysloop::EspSysLoopStack, nvs::EspDefaultNvs, wifi::EspWifi};
 // use esp_idf_sys as _;
 // use log::info; // If using the `binstart` feature of `esp-idf-sys`, always keep this module imported
@@ -30,11 +43,9 @@ use embedded_graphics::pixelcolor::*;
 use load::AppContext;
 use load::load_app;
 
-use crate::epd1in54_v2::DEFAULT_BACKGROUND_COLOR;
-use crate::epd1in54_v2::Epd1in54;
-use crate::epd1in54_v2::HEIGHT;
-use crate::epd1in54_v2::WIDTH;
-use crate::traits::WaveshareDisplay;
+
+use st7789;
+use st7789::ST7789;
 
 mod load;
 mod time;
@@ -42,11 +53,6 @@ mod weather;
 mod cat_play;
 mod distance;
 
-mod epd1in54_v2;
-mod type_a;
-mod traits;
-mod color;
-mod interface;
 
 const SSID: &str = "Xiaomi_85FE";
 const PASS: &str = "aa11aa041212";
@@ -69,15 +75,25 @@ fn main() -> Result<()> {
         default_nvs.clone(),
     )?;
     let client = EspHttpClient::new_default()?;
-    _waveshare_epd_hello_world(
-    peripherals.spi2,
-    pins.gpio13,
-    pins.gpio14, //din-mosi
-    pins.gpio15,
-    pins.gpio25,
-    pins.gpio27,
-    pins.gpio26,
+     let mut display = lcd(
+        pins.gpio4,
+        pins.gpio16,//ao
+        pins.gpio23,
+        peripherals.spi2,
+        pins.gpio18,//scl
+        pins.gpio19,//sda
+        pins.gpio5,
     )?;
+    AnyError::<st7789::Error<_>>::wrap(|| { draw_profile(&mut display) })?;
+    // _waveshare_epd_hello_world(
+    // peripherals.spi2,
+    // pins.gpio13,
+    // pins.gpio14, //din-mosi
+    // pins.gpio15,
+    // pins.gpio25,
+    // pins.gpio27,
+    // pins.gpio26,
+    // )?;
 //    _vl53l0x_hello_world(
 //         peripherals.i2c0,
 //         pins.gpio22,
@@ -86,7 +102,7 @@ fn main() -> Result<()> {
     // init context
     let mut ctx = AppContext{
         http: client,
-        gpio16: Some(pins.gpio16.into_output().unwrap()),
+        gpio26: Some(pins.gpio26.into_output().unwrap()),
         gpio22: Some(pins.gpio22),
         gpio21: Some(pins.gpio21),
         i2c0: Some(peripherals.i2c0),
@@ -95,53 +111,115 @@ fn main() -> Result<()> {
     load_app(&mut ctx)
 }
 
-
-fn _waveshare_epd_hello_world(
+fn lcd(
+    backlight: gpio::Gpio4<gpio::Unknown>,
+    dc: gpio::Gpio16<gpio::Unknown>,
+    rst: gpio::Gpio23<gpio::Unknown>,
     spi: spi::SPI2,
-    sclk: gpio::Gpio13<gpio::Unknown>,
-    sdo: gpio::Gpio14<gpio::Unknown>,
-    cs: gpio::Gpio15<gpio::Unknown>,
-    busy_in: gpio::Gpio25<gpio::Unknown>,
-    dc: gpio::Gpio27<gpio::Unknown>,
-    rst: gpio::Gpio26<gpio::Unknown>,
-) -> Result<()> {
-    println!("About to initialize Waveshare 1.54 e-paper display");
-    let cs = cs.into_output().unwrap();
-    let busy_in = busy_in.into_input().unwrap();
-    let dc = dc.into_output().unwrap();
-    let rst = rst.into_output().unwrap();
+    sclk: gpio::Gpio18<gpio::Unknown>,
+    sdo: gpio::Gpio19<gpio::Unknown>,
+    cs: gpio::Gpio5<gpio::Unknown>,
+) -> Result<ST7789<SPIInterfaceNoCS<Master<SPI2, Gpio18<Unknown>, Gpio19<Unknown>, Gpio21<Unknown>, Gpio5<Unknown>>, Gpio16<Output>>, Gpio23<Output>>>{
+    println!("About to initialize the ST7789 LED driver");
 
     let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
 
-    let mut my_spi = spi::Master::<spi::SPI2, _, _, _, _>::new(
-        spi,
-        spi::Pins {
-            sclk: sclk,
-            sdo: sdo,
-            sdi: Option::<gpio::Gpio12<gpio::Unknown>>::None,
-            cs: Option::<gpio::Gpio15<gpio::Unknown>>::None,
-        },
-        config,
+    let mut backlight = backlight.into_output()?;
+    backlight.set_high()?;
+
+    let di = SPIInterfaceNoCS::new(
+        spi::Master::<spi::SPI2, _, _, _, _>::new(
+            spi,
+            spi::Pins {
+                sclk,
+                sdo,
+                sdi: Option::<gpio::Gpio21<gpio::Unknown>>::None,
+                cs: Some(cs),
+            },
+            config,
+        )?,
+        dc.into_output()?,
+    );
+
+    let mut display:  ST7789<SPIInterfaceNoCS<Master<SPI2, Gpio18<Unknown>, Gpio19<Unknown>, Gpio21<Unknown>, Gpio5<Unknown>>, Gpio16<Output>>, Gpio23<Output>> = st7789::ST7789::new(
+        di,
+        rst.into_output()?,
+        320,
+        240,
+    );
+
+    AnyError::<st7789::Error<_>>::wrap(|| {
+        display.init(&mut delay::Ets)?;
+        display.set_orientation(st7789::Orientation::Landscape)
+    })?;
+    Ok(display)
+}
+
+
+fn draw_profile<D>(display: &mut D) -> Result<(), D::Error>
+where
+    D: DrawTarget<Color = Rgb565> + Dimensions,
+    D::Color: From<Rgb565>,
+{
+    display.clear(Rgb565::BLACK.into())?;
+
+    Text::new(
+        "hello!!!",
+        Point::new(10, 10),
+        MonoTextStyle::new(&FONT_10X20, Rgb565::WHITE.into()),
     )
-    .unwrap();
-    // Setup EPD
-    let mut epd = Epd1in54::new(&mut my_spi, cs, busy_in, dc, rst, &mut delay::Ets).unwrap();
-    // Use display graphics from embedded-graphics
-    let mut buffer =
-        vec![DEFAULT_BACKGROUND_COLOR.get_byte_value(); WIDTH as usize / 8 * HEIGHT as usize];
-    let mut display = VarDisplay::new(WIDTH, HEIGHT, &mut buffer);
+    .draw(display)?;
 
-    let style = MonoTextStyle::new(&FONT_10X20, BinaryColor::On);
+    println!("LED rendering profile done");
 
-    // Create a text at position (20, 30) and draw it using the previously defined style
-    Text::new("Hello Rust!.......", Point::new(0, 0), style).draw(&mut display)?;
-
-    // Display updated frame
-    epd.update_frame(&mut my_spi, &display.buffer(), &mut delay::Ets)?;
-    epd.display_frame(&mut my_spi, &mut delay::Ets)?;
-    println!("setup epd");
     Ok(())
 }
+// fn _waveshare_epd_hello_world(
+//     spi: spi::SPI2,
+//     sclk: gpio::Gpio13<gpio::Unknown>,
+//     sdo: gpio::Gpio14<gpio::Unknown>,
+//     cs: gpio::Gpio15<gpio::Unknown>,
+//     busy_in: gpio::Gpio25<gpio::Unknown>,
+//     dc: gpio::Gpio27<gpio::Unknown>,
+//     rst: gpio::Gpio26<gpio::Unknown>,
+// ) -> Result<()> {
+//     println!("About to initialize Waveshare 1.54 e-paper display");
+//     let cs = cs.into_output().unwrap();
+//     let busy_in = busy_in.into_input().unwrap();
+//     let dc = dc.into_output().unwrap();
+//     let rst = rst.into_output().unwrap();
+
+//     let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
+
+//     let mut my_spi = spi::Master::<spi::SPI2, _, _, _, _>::new(
+//         spi,
+//         spi::Pins {
+//             sclk: sclk,
+//             sdo: sdo,
+//             sdi: Option::<gpio::Gpio12<gpio::Unknown>>::None,
+//             cs: Option::<gpio::Gpio15<gpio::Unknown>>::None,
+//         },
+//         config,
+//     )
+//     .unwrap();
+//     // Setup EPD
+//     let mut epd = Epd1in54::new(&mut my_spi, cs, busy_in, dc, rst, &mut delay::Ets).unwrap();
+//     // Use display graphics from embedded-graphics
+//     let mut buffer =
+//         vec![DEFAULT_BACKGROUND_COLOR.get_byte_value(); WIDTH as usize / 8 * HEIGHT as usize];
+//     let mut display = VarDisplay::new(WIDTH, HEIGHT, &mut buffer);
+
+//     let style = MonoTextStyle::new(&FONT_10X20, BinaryColor::On);
+
+//     // Create a text at position (20, 30) and draw it using the previously defined style
+//     Text::new("Hello Rust!.......", Point::new(0, 0), style).draw(&mut display)?;
+
+//     // Display updated frame
+//     epd.update_frame(&mut my_spi, &display.buffer(), &mut delay::Ets)?;
+//     epd.display_frame(&mut my_spi, &mut delay::Ets)?;
+//     println!("setup epd");
+//     Ok(())
+// }
 
 
 fn wifi(

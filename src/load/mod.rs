@@ -2,7 +2,7 @@ use std::{thread, time::Duration};
 
 use anyhow::Result;
 
-use esp_idf_hal::gpio::{Gpio16, Output, Gpio22, Unknown, Gpio21};
+use esp_idf_hal::gpio::{Gpio26, Output, Gpio22, Unknown, Gpio21};
 use esp_idf_svc::http::client::EspHttpClient;
 use esp_idf_hal::i2c;
 
@@ -14,7 +14,7 @@ pub mod app;
 pub struct AppContext {
     pub http: EspHttpClient,
     pub i2c0: Option<i2c::I2C0>,
-    pub gpio16 :Option<Gpio16<Output>>,
+    pub gpio26 :Option<Gpio26<Output>>,
     pub gpio22: Option<Gpio22<Unknown>>,
     pub gpio21: Option<Gpio21<Unknown>>,
 }

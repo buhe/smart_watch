@@ -37,7 +37,8 @@ display-interface = "0.4"
 display-interface-spi = "0.4"
 ntp = {git = "https://github.com/buhe/ntp"}
 time = {version="0.3.7", features = ["macros"]}
-epd-waveshare = "0.5.0"
+# epd-waveshare = "0.5.0"
+st7789 = "0.6"
 vl53l0x = "0.3.1"
 # serde = { version = "1.0", default-features = false, features = ["derive"] }
 # serde-json-core = {version="0.4.0", features = ["std"]}
