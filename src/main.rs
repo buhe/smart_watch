@@ -36,6 +36,11 @@ mod weather;
 mod cat_play;
 mod distance;
 
+mod epd1in54_v2;
+mod type_a;
+mod traits;
+mod color;
+mod interface;
 
 const SSID: &str = "Xiaomi_85FE";
 const PASS: &str = "aa11aa041212";
@@ -58,11 +63,10 @@ fn main() -> Result<()> {
         default_nvs.clone(),
     )?;
     let client = EspHttpClient::new_default()?;
-
     _waveshare_epd_hello_world(
     peripherals.spi2,
     pins.gpio13,
-    pins.gpio14,
+    pins.gpio14, //din-mosi
     pins.gpio15,
     pins.gpio25,
     pins.gpio27,
@@ -124,15 +128,14 @@ fn _waveshare_epd_hello_world(
     let style = MonoTextStyle::new(&FONT_10X20, BinaryColor::On);
 
     // Create a text at position (20, 30) and draw it using the previously defined style
-    Text::new("Hello Rust!", Point::new(20, 30), style).draw(&mut display)?;
+    Text::new("Hello Rust!.......", Point::new(0, 0), style).draw(&mut display)?;
 
     // Display updated frame
     epd.update_frame(&mut my_spi, &display.buffer(), &mut delay::Ets)?;
     epd.display_frame(&mut my_spi, &mut delay::Ets)?;
-
+    println!("setup epd");
     Ok(())
 }
-
 
 
 fn wifi(
