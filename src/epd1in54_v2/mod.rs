@@ -60,7 +60,7 @@ use embedded_hal::{
 
 use crate::type_a::{
     command::Command,
-    constants::{LUT_FULL_UPDATE, LUT_PARTIAL_UPDATE},
+    constants::{LUT_FULL_UPDATE, LUT_PARTIAL_UPDATE, LUT_FULL_UPDATE2},
 };
 
 use crate::color::Color;
@@ -94,90 +94,128 @@ where
     DELAY: DelayMs<u8>,
 {
     fn init(&mut self, spi: &mut SPI, delay: &mut DELAY) -> Result<(), SPI::Error> {
-        self.interface.reset(delay, 10);
+        // self.interface.reset(delay, 10);
 
-        // 3 Databytes:
-        // A[7:0]
-        // 0.. A[8]
-        // 0.. B[2:0]
-        // Default Values: A = Height of Screen (0x127), B = 0x00 (GD, SM and TB=0?)
-        self.interface.cmd_with_data(
-            spi,
-            Command::DriverOutputControl,
-            &[HEIGHT as u8, (HEIGHT >> 8) as u8, 0x00],
-        )?;
+        // // 3 Databytes:
+        // // A[7:0]
+        // // 0.. A[8]
+        // // 0.. B[2:0]
+        // // Default Values: A = Height of Screen (0x127), B = 0x00 (GD, SM and TB=0?)
+        // self.interface.cmd_with_data(
+        //     spi,
+        //     Command::DriverOutputControl,
+        //     &[HEIGHT as u8, (HEIGHT >> 8) as u8, 0x00],
+        // )?;
 
-        // 3 Databytes: (and default values from datasheet and arduino)
-        // 1 .. A[6:0]  = 0xCF | 0xD7
-        // 1 .. B[6:0]  = 0xCE | 0xD6
-        // 1 .. C[6:0]  = 0x8D | 0x9D
-        //TODO: test
-        self.interface
-            .cmd_with_data(spi, Command::BoosterSoftStartControl, &[0xD7, 0xD6, 0x9D])?;
+        // // 3 Databytes: (and default values from datasheet and arduino)
+        // // 1 .. A[6:0]  = 0xCF | 0xD7
+        // // 1 .. B[6:0]  = 0xCE | 0xD6
+        // // 1 .. C[6:0]  = 0x8D | 0x9D
+        // //TODO: test
+        // self.interface
+        //     .cmd_with_data(spi, Command::BoosterSoftStartControl, &[0xD7, 0xD6, 0x9D])?;
 
-        // One Databyte with value 0xA8 for 7V VCOM
-        self.interface
-            .cmd_with_data(spi, Command::WriteVcomRegister, &[0xA8])?;
+        // // One Databyte with value 0xA8 for 7V VCOM
+        // self.interface
+        //     .cmd_with_data(spi, Command::WriteVcomRegister, &[0xA8])?;
 
-        // One Databyte with default value 0x1A for 4 dummy lines per gate
-        self.interface
-            .cmd_with_data(spi, Command::SetDummyLinePeriod, &[0x1A])?;
+        // // One Databyte with default value 0x1A for 4 dummy lines per gate
+        // self.interface
+        //     .cmd_with_data(spi, Command::SetDummyLinePeriod, &[0x1A])?;
 
-        // One Databyte with default value 0x08 for 2us per line
-        self.interface
-            .cmd_with_data(spi, Command::SetGateLineWidth, &[0x08])?;
+        // // One Databyte with default value 0x08 for 2us per line
+        // self.interface
+        //     .cmd_with_data(spi, Command::SetGateLineWidth, &[0x08])?;
 
-        // One Databyte with default value 0x03
-        //  -> address: x increment, y increment, address counter is updated in x direction
-        self.interface
-            .cmd_with_data(spi, Command::DataEntryModeSetting, &[0x03])?;
+        // // One Databyte with default value 0x03
+        // //  -> address: x increment, y increment, address counter is updated in x direction
+        // self.interface
+        //     .cmd_with_data(spi, Command::DataEntryModeSetting, &[0x03])?;
 
-        self.set_lut(spi, None)?;
+        // self.set_lut(spi, None)?;
 
-        self.wait_until_idle();
+        // self.wait_until_idle();
 
 //         Reset();
-
+        self.interface.reset(delay, 10);
 // 	WaitUntilIdle();
+        self.wait_until_idle();
 // 	SendCommand(0x12);  //SWRESET
+        self.interface.cmd(spi, Command::SwReset)?;
 // 	WaitUntilIdle();
+        self.wait_until_idle();
 
 // 	SendCommand(0x01); //Driver output control
 // 	SendData(0xC7);
 // 	SendData(0x00);
 // 	SendData(0x00);
+          self.interface.cmd_with_data(
+            spi,
+            Command::DriverOutputControl,
+            &[HEIGHT as u8, (HEIGHT >> 8) as u8, 0x00],
+        )?;
 
 // 	SendCommand(0x11); //data entry mode
 // 	SendData(0x03);
-
+        self.interface
+            .cmd_with_data(spi, Command::DataEntryModeSetting, &[0x03])?;
 //   SendCommand(0x44);
 //   /* x point must be the multiple of 8 or the last 3 bits will be ignored */
 //   SendData((0 >> 3) & 0xFF);
 //   SendData((199 >> 3) & 0xFF);
+        self.interface.cmd_with_data(
+            spi,
+            Command::SetRamXAddressStartEndPosition,
+            &[((0 >> 3) & 0xFF) as u8, (((WIDTH >> 3) & 0xFF) >> 3) as u8],
+        )?;
 //   SendCommand(0x45);
 //   SendData(0 & 0xFF);
 //   SendData((0 >> 8) & 0xFF);
 //   SendData(199 & 0xFF);
 //   SendData((199 >> 8) & 0xFF);
-
+        // 2 Databytes: A[7:0] & 0..A[8] for each - start and end
+        self.interface.cmd_with_data(
+            spi,
+            Command::SetRamYAddressStartEndPosition,
+            &[
+                (0 & 0xFF) as u8,
+                ((0 >> 8) & 0xFF) as u8,
+                (HEIGHT & 0xFF) as u8,
+                ((HEIGHT >> 8) & 0xFF) as u8,
+            ],
+        )?;
 // 	SendCommand(0x3C); //BorderWavefrom
 // 	SendData(0x01);
-
+         self.interface
+            .cmd_with_data(spi, Command::BorderWaveformControl, &[0x01])?;
 // 	SendCommand(0x18);
 // 	SendData(0x80);
-
+        self.interface
+            .cmd_with_data(spi, Command::Unknown1, &[0x80])?;
 // 	SendCommand(0x22); // //Load Temperature and waveform setting.
 // 	SendData(0XB1);
+        self.interface
+            .cmd_with_data(spi, Command::DisplayUpdateControl2, &[0xb1])?;
 // 	SendCommand(0x20);
-
+        self.interface.cmd(spi, Command::MasterActivation)?;
 // 	SendCommand(0x4E);   // set RAM x address count to 0;
 // 	SendData(0x00);
+            self.interface
+            .cmd_with_data(spi, Command::SetRamXAddressCounter, &[(WIDTH >> 8) as u8])?;
 // 	SendCommand(0x4F);   // set RAM y address count to 0X199;
 // 	SendData(0xC7);
 // 	SendData(0x00);
-// 	WaitUntilIdle();
 
+        // 2 Databytes: A[7:0] & 0..A[8]
+        self.interface.cmd_with_data(
+            spi,
+            Command::SetRamYAddressCounter,
+            &[HEIGHT as u8, (HEIGHT >> 8) as u8],
+        )?;
+// 	WaitUntilIdle();
+        self.wait_until_idle();
 // 	SetLut(WF_Full_1IN54);
+        self.set_lut(spi, Some(RefreshLut::Full))?;
 
         Ok(())
     }
@@ -323,7 +361,7 @@ where
             self.refresh = refresh_lut;
         }
         match self.refresh {
-            RefreshLut::Full => self.set_lut_helper(spi, &LUT_FULL_UPDATE),
+            RefreshLut::Full => self.set_lut_helper(spi, &LUT_FULL_UPDATE2),
             RefreshLut::Quick => self.set_lut_helper(spi, &LUT_PARTIAL_UPDATE),
         }
     }

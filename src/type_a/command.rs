@@ -39,6 +39,8 @@ pub(crate) enum Command {
 
     SwReset = 0x12,
 
+    Unknown1 = 0x18,
+
     TemperatureSensorControl = 0x1A,
 
     MasterActivation = 0x20,
