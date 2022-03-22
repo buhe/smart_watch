@@ -7,7 +7,7 @@ use embedded_graphics::prelude::*;
 // use embedded_graphics::image::{Image, ImageRawLE};
 use embedded_graphics::text::*;
 // use embedded_hal::digital::v2::OutputPin;
-use epd_waveshare::{epd1in54::*, graphics::VarDisplay, prelude::*};
+use epd_waveshare::{graphics::VarDisplay, prelude::*};
 
 // // use embedded_svc::ping::Ping;
 // use embedded_svc::utils::anyerror::*;
@@ -29,6 +29,12 @@ use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
 use embedded_graphics::pixelcolor::*;
 use load::AppContext;
 use load::load_app;
+
+use crate::epd1in54_v2::DEFAULT_BACKGROUND_COLOR;
+use crate::epd1in54_v2::Epd1in54;
+use crate::epd1in54_v2::HEIGHT;
+use crate::epd1in54_v2::WIDTH;
+use crate::traits::WaveshareDisplay;
 
 mod load;
 mod time;
