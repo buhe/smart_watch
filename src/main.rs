@@ -95,7 +95,7 @@ fn main() -> Result<()> {
         gpio22: Some(pins.gpio22),
         gpio21: Some(pins.gpio21),
         i2c0: Some(peripherals.i2c0),
-        // targets: Box::new(targets),
+        // targets: None,
     };
     // load app
     load_app(&mut ctx,&mut display)

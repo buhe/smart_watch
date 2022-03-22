@@ -12,6 +12,7 @@ use time::{ Duration, PrimitiveDateTime};
 use time::ext::{NumericalDuration};
 
 use crate::load::{AppContext, app::App};
+use crate::target::Target;
 
 pub struct Time {
     pub r: Option<PrimitiveDateTime>,
@@ -33,7 +34,8 @@ impl App for Time {
         Ok(())
     }
 
-    fn run(self: &mut Self, _ctx: &mut AppContext) -> Result<()> {
+    fn run(self: &mut Self, _ctx: &mut AppContext, ts: &Vec<Target>) -> Result<()> {
+        
         // println!("time is {}", self.r.unwrap() + self.count.unwrap().elapsed());
         Ok(())
     }

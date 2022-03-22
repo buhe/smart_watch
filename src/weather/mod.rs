@@ -5,6 +5,7 @@ use embedded_svc::io::Bytes;
 use embedded_svc::http::{client::*};
 
 use crate::load::{AppContext, app::App};
+use crate::target::Target;
 const URL: &str = "https://wttr.in/?format=2";
 pub struct Weather {
     pub count: Option<Instant>,
@@ -17,7 +18,7 @@ impl App for Weather {
         Ok(())
     }
 
-    fn run(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
+    fn run(self: &mut Self, ctx: &mut AppContext, ts: &Vec<Target>) -> Result<()> {
         // api interval 1m
         let e = self.count.unwrap().elapsed().as_secs();
         if e % 60 == 0 && e != self.cond {

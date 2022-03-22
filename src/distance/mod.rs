@@ -10,6 +10,7 @@ use esp_idf_hal::i2c::{self, I2C0, Master};
 use vl53l0x::VL53L0x;
 
 use crate::load::{AppContext, app::App};
+use crate::target::Target;
 
 const URL: &str = "https://jcxivsbsjuqmeafnwuwk.supabase.co/rest/v1/onoff?id=eq.2&select=en";
 pub enum State {
@@ -40,7 +41,7 @@ impl App for Distance {
         Ok(())
     }
 
-    fn run(self: &mut Self, ctx: &mut AppContext) -> Result<()> {
+    fn run(self: &mut Self, ctx: &mut AppContext, ts: &Vec<Target>) -> Result<()> {
         let e = self.count.unwrap().elapsed().as_secs();
          if e % 4 == 0 && e != self.cond {
             self.cond = e;

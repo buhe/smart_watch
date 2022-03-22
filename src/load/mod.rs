@@ -21,7 +21,7 @@ pub struct AppContext {
     pub gpio26 :Option<Gpio26<Output>>,
     pub gpio22: Option<Gpio22<Unknown>>,
     pub gpio21: Option<Gpio21<Unknown>>,
-    // pub targets: Box<Vec<Target>>,
+    // pub targets: Option<&'a Vec<Target>>,
 }
 
 pub fn load_app<D>(ctx: &mut AppContext, display: &mut D) -> Result<()> 
@@ -35,13 +35,15 @@ where
         // Box::new(CatPlay{count: None, cond: 0}),
         // Box::new(Distance{count:None, cond: 0, tof: None, state: crate::distance::State::Stopped}),
     ];
+    let mut targets :Vec<Target> = vec![];
+    // ctx.targets = Some(&targets);
     for a in apps.iter_mut() {
          a.init(ctx)?;
     }
-    let mut targets :Vec<Target> = vec![];
+   
     loop {
         for a in apps.iter_mut() {
-            a.run(ctx)?;
+            a.run(ctx, &targets)?;
         }
         while !targets.is_empty() {
             let t = targets.pop().unwrap();
