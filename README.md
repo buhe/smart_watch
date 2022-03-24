@@ -59,7 +59,9 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [x] supabase
 - [x] app based supabase
 - [x] st7789
-
+- [ ] pcb
+    - [ ] schematic
+    - [ ] package
 ### onoff
 
 ```bash
