@@ -62,11 +62,6 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [ ] pcb
     - [ ] schematic
     - [ ] package
-### onoff
+### PCB design
 
-```bash
-curl 'https://jcxivsbsjuqmeafnwuwk.supabase.co/rest/v1/onoff?id=eq.1&select=*' \
--H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjeGl2c2JzanVxbWVhZm53dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDcwNjYwOTEsImV4cCI6MTk2MjY0MjA5MX0.YP7o3MKM7sxsNioyuVuVqTIgdgJbKz638njLOnT9DRA" \
--H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjeGl2c2JzanVxbWVhZm53dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDcwNjYwOTEsImV4cCI6MTk2MjY0MjA5MX0.YP7o3MKM7sxsNioyuVuVqTIgdgJbKz638njLOnT9DRA" \
--H "Range: 0-9"
-```
+- https://oshwhub.com/buhe/smart_watch
