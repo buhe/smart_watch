@@ -47,20 +47,19 @@ esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_res
 - [x] distance
     - [x] switch it
 - [ ] soldering chip
-- [ ] battery
-- [ ] charge
-- [ ] ldo
-- [ ] flash via serial
+- [x] battery
+- [x] charge
+- [x] ldo
 - [ ] e-paper as display screen
     - [ ] render time
     - [ ] render weather
     - [ ] render distance
-- [ ] network via phone bt
 - [x] supabase
 - [x] app based supabase
 - [x] st7789
 - [ ] pcb
-    - [ ] schematic
+    - [x] schematic
+    - [ ] wire
     - [ ] package
 ### PCB design
 
